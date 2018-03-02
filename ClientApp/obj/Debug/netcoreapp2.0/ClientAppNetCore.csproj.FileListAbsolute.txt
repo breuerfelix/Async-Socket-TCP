@@ -1,0 +1,9 @@
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\bin\Debug\netcoreapp2.0\ClientAppNetCore.deps.json
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\bin\Debug\netcoreapp2.0\ClientAppNetCore.dll
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\bin\Debug\netcoreapp2.0\ClientAppNetCore.pdb
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientAppNetCore.csprojResolveAssemblyReference.cache
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientAppNetCore.csproj.CoreCompileInputs.cache
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientAppNetCore.AssemblyInfoInputs.cache
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientAppNetCore.AssemblyInfo.cs
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientAppNetCore.dll
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientAppNetCore.pdb

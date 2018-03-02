@@ -1,0 +1,6 @@
+C:\Users\fbreu\Documents\nClient-1Server\ClientAppUnity\bin\Debug\ClientAppUnity.dll
+C:\Users\fbreu\Documents\nClient-1Server\ClientAppUnity\bin\Debug\ClientAppUnity.pdb
+C:\Users\fbreu\Documents\nClient-1Server\ClientAppUnity\obj\Debug\ClientAppUnity.csprojResolveAssemblyReference.cache
+C:\Users\fbreu\Documents\nClient-1Server\ClientAppUnity\obj\Debug\ClientAppUnity.csproj.CoreCompileInputs.cache
+C:\Users\fbreu\Documents\nClient-1Server\ClientAppUnity\obj\Debug\ClientAppUnity.dll
+C:\Users\fbreu\Documents\nClient-1Server\ClientAppUnity\obj\Debug\ClientAppUnity.pdb

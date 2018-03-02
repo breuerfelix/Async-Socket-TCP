@@ -18,6 +18,14 @@ namespace Bindings
             readPos = 0;
         }
 
+        public dataPackage(byte[] data)
+        {
+            bufferList = new List<byte>();
+            readPos = 0;
+
+            this.write(data);
+        }
+
         public void clear()
         {
             bufferList.Clear();
@@ -100,9 +108,7 @@ namespace Bindings
             }
             else
             {
-                Console.WriteLine("Buffer past its Limit! readInteger()");
-
-                throw new Exception("Buffer is past its Limit!");
+                throw new Exception("Buffer is past its Limit! - readInteger()");
             }
         }
 
@@ -127,9 +133,7 @@ namespace Bindings
             }
             else
             {
-                Console.WriteLine("Buffer past its Limit! readFloat()");
-
-                throw new Exception("Buffer is past its Limit!");
+                throw new Exception("Buffer is past its Limit! - readFloat()");
             }
         }
 
@@ -154,9 +158,7 @@ namespace Bindings
             }
             else
             {
-                Console.WriteLine("Buffer past its Limit! readByte()");
-
-                throw new Exception("Buffer is past its Limit!");
+                throw new Exception("Buffer is past its Limit! - readByte()");
             }
         }
 
@@ -204,7 +206,6 @@ namespace Bindings
         private bool disposedValue = false;
         protected virtual void Dispose(bool disposing)
         {
-            //TODO nachprüfen
             if (!disposedValue)
             {
                 if (disposing)

@@ -674,9 +674,9 @@
       "hideWarningsAndErrors": true
     },
     "restore": {
-      "projectUniqueName": "C:\\Users\\fbreu\\Documents\\nClient-1Server\\ClientApp\\ClientApp.csproj",
-      "projectName": "ClientApp",
-      "projectPath": "C:\\Users\\fbreu\\Documents\\nClient-1Server\\ClientApp\\ClientApp.csproj",
+      "projectUniqueName": "C:\\Users\\fbreu\\Documents\\nClient-1Server\\ClientApp\\ClientAppNetCore.csproj",
+      "projectName": "ClientAppNetCore",
+      "projectPath": "C:\\Users\\fbreu\\Documents\\nClient-1Server\\ClientApp\\ClientAppNetCore.csproj",
       "packagesPath": "C:\\Users\\fbreu\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\fbreu\\Documents\\nClient-1Server\\ClientApp\\obj\\",
       "projectStyle": "PackageReference",
