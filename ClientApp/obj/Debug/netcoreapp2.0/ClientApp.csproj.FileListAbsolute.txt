@@ -9,3 +9,12 @@ C:\Users\fbreu\Documents\Client-Server\ClientApp\bin\Debug\netcoreapp2.0\ClientA
 C:\Users\fbreu\Documents\Client-Server\ClientApp\bin\Debug\netcoreapp2.0\ClientApp.pdb
 C:\Users\fbreu\Documents\Client-Server\ClientApp\obj\Debug\netcoreapp2.0\ClientApp.dll
 C:\Users\fbreu\Documents\Client-Server\ClientApp\obj\Debug\netcoreapp2.0\ClientApp.pdb
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\bin\Debug\netcoreapp2.0\ClientApp.deps.json
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\bin\Debug\netcoreapp2.0\ClientApp.dll
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\bin\Debug\netcoreapp2.0\ClientApp.pdb
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientApp.csprojResolveAssemblyReference.cache
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientApp.csproj.CoreCompileInputs.cache
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientApp.AssemblyInfoInputs.cache
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientApp.AssemblyInfo.cs
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientApp.dll
+C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp2.0\ClientApp.pdb
