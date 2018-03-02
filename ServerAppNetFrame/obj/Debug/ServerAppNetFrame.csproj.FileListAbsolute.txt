@@ -1,0 +1,6 @@
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetFrame\bin\Debug\ServerAppNetFrame.dll
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetFrame\bin\Debug\ServerAppNetFrame.pdb
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetFrame\obj\Debug\ServerAppNetFrame.csprojResolveAssemblyReference.cache
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetFrame\obj\Debug\ServerAppNetFrame.csproj.CoreCompileInputs.cache
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetFrame\obj\Debug\ServerAppNetFrame.dll
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetFrame\obj\Debug\ServerAppNetFrame.pdb
