@@ -1,0 +1,8 @@
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\bin\Debug\net35\ServerAppNetCore.dll
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\bin\Debug\net35\ServerAppNetCore.pdb
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net35\ServerAppNetCore.csprojResolveAssemblyReference.cache
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net35\ServerAppNetCore.csproj.CoreCompileInputs.cache
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net35\ServerAppNetCore.AssemblyInfoInputs.cache
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net35\ServerAppNetCore.AssemblyInfo.cs
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net35\ServerAppNetCore.dll
+C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net35\ServerAppNetCore.pdb

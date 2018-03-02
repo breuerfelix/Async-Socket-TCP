@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>netcoreapp2.0;net35</TargetFrameworks>
+    <ApplicationIcon />
+    <StartupObject />
+    <RootNamespace>ServerApp</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="..\Bindings\Bindings.projitems" Label="Shared" />
+
+</Project>
