@@ -8,6 +8,4 @@
     <RootNamespace>ServerApp</RootNamespace>
   </PropertyGroup>
 
-  <Import Project="..\Bindings\Bindings.projitems" Label="Shared" />
-
 </Project>

@@ -7,6 +7,4 @@
     <StartupObject />
   </PropertyGroup>
 
-  <Import Project="..\Bindings\Bindings.projitems" Label="Shared" />
-
 </Project>
