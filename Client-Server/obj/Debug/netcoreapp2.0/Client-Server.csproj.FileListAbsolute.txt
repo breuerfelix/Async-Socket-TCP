@@ -1,0 +1,9 @@
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Debug\netcoreapp2.0\Client-Server.csprojResolveAssemblyReference.cache
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Debug\netcoreapp2.0\Client-Server.csproj.CoreCompileInputs.cache
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Debug\netcoreapp2.0\Client-Server.AssemblyInfoInputs.cache
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Debug\netcoreapp2.0\Client-Server.AssemblyInfo.cs
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\bin\Debug\netcoreapp2.0\Client-Server.deps.json
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\bin\Debug\netcoreapp2.0\Client-Server.dll
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\bin\Debug\netcoreapp2.0\Client-Server.pdb
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Debug\netcoreapp2.0\Client-Server.dll
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Debug\netcoreapp2.0\Client-Server.pdb

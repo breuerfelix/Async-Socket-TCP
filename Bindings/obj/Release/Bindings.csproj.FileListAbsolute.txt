@@ -1,6 +1,0 @@
-C:\Users\fbreu\Documents\nClient-1Server\Bindings\bin\Release\Bindings.dll
-C:\Users\fbreu\Documents\nClient-1Server\Bindings\bin\Release\Bindings.pdb
-C:\Users\fbreu\Documents\nClient-1Server\Bindings\obj\Release\Bindings.csprojResolveAssemblyReference.cache
-C:\Users\fbreu\Documents\nClient-1Server\Bindings\obj\Release\Bindings.csproj.CoreCompileInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\Bindings\obj\Release\Bindings.dll
-C:\Users\fbreu\Documents\nClient-1Server\Bindings\obj\Release\Bindings.pdb

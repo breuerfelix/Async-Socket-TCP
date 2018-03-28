@@ -1,8 +1,0 @@
-C:\Users\fbreu\Documents\nClient-1Server\ServerApp\bin\Release\net35\ServerApp.dll
-C:\Users\fbreu\Documents\nClient-1Server\ServerApp\bin\Release\net35\ServerApp.pdb
-C:\Users\fbreu\Documents\nClient-1Server\ServerApp\obj\Release\net35\ServerApp.csprojResolveAssemblyReference.cache
-C:\Users\fbreu\Documents\nClient-1Server\ServerApp\obj\Release\net35\ServerApp.csproj.CoreCompileInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\ServerApp\obj\Release\net35\ServerApp.AssemblyInfoInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\ServerApp\obj\Release\net35\ServerApp.AssemblyInfo.cs
-C:\Users\fbreu\Documents\nClient-1Server\ServerApp\obj\Release\net35\ServerApp.dll
-C:\Users\fbreu\Documents\nClient-1Server\ServerApp\obj\Release\net35\ServerApp.pdb

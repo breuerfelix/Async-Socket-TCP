@@ -1,0 +1,7 @@
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\bin\Release\net35\Client-Server.dll
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\bin\Release\net35\Client-Server.pdb
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Release\net35\Client-Server.csproj.CoreCompileInputs.cache
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Release\net35\Client-Server.AssemblyInfoInputs.cache
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Release\net35\Client-Server.AssemblyInfo.cs
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Release\net35\Client-Server.dll
+C:\Users\fbreu\Documents\Client-Server-TCP\Client-Server\obj\Release\net35\Client-Server.pdb

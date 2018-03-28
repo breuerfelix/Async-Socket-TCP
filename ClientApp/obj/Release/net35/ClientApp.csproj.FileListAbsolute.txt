@@ -1,8 +1,0 @@
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\bin\Release\net35\ClientApp.dll
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\bin\Release\net35\ClientApp.pdb
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Release\net35\ClientApp.csprojResolveAssemblyReference.cache
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Release\net35\ClientApp.csproj.CoreCompileInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Release\net35\ClientApp.AssemblyInfoInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Release\net35\ClientApp.AssemblyInfo.cs
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Release\net35\ClientApp.dll
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Release\net35\ClientApp.pdb

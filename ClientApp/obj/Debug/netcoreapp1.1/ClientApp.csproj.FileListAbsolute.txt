@@ -1,4 +1,0 @@
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp1.1\ClientApp.csprojResolveAssemblyReference.cache
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp1.1\ClientApp.csproj.CoreCompileInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp1.1\ClientApp.AssemblyInfoInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\ClientApp\obj\Debug\netcoreapp1.1\ClientApp.AssemblyInfo.cs

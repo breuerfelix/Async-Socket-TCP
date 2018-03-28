@@ -1,8 +1,0 @@
-C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\bin\Debug\net45\ServerAppNetCore.dll
-C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\bin\Debug\net45\ServerAppNetCore.pdb
-C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net45\ServerAppNetCore.csprojResolveAssemblyReference.cache
-C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net45\ServerAppNetCore.csproj.CoreCompileInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net45\ServerAppNetCore.AssemblyInfoInputs.cache
-C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net45\ServerAppNetCore.AssemblyInfo.cs
-C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net45\ServerAppNetCore.dll
-C:\Users\fbreu\Documents\nClient-1Server\ServerAppNetCore\obj\Debug\net45\ServerAppNetCore.pdb
