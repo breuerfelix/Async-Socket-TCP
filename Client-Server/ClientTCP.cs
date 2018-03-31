@@ -36,8 +36,30 @@ namespace ClientApp
         private string ip;
         private int port;
         private bool setup = false;
-        private bool log = false;
-        private bool connected = false;
+
+        private bool _connected;
+        private bool connected
+        {
+            get
+            {
+                lock (Lock)
+                {
+                    return _connected;
+                }
+            }
+            set
+            {
+                lock(Lock){
+                    _connected = value;
+                }
+            }
+        }
+
+        //log events
+        public delegate void consoleLog(string message);
+        public event consoleLog consoleLogged;
+
+        private static Object Lock = new Object();
 
         #region Setup
         public void setupClient(string ip = "127.0.0.1", int port = 0)
@@ -49,50 +71,39 @@ namespace ClientApp
             this.port = port;
             setup = true;
 
-            if (log)
-                Console.WriteLine($"Client set up to communicate with Server {ip} with Port {port}");
-        }
-
-        public void enableConsole(bool console = true)
-        {
-            this.log = console;
+            log($"Client set up to communicate with Server {ip} with Port {port}");
         }
 
         public void connect()
         {
             if (setup)
             {
-                if (log)
-                    Console.WriteLine("Connection to server...");
+                log("Connection to server...");
 
                 try
                 {
                     clientSocket.BeginConnect(ip, port, new AsyncCallback(connectCallback), clientSocket);
-                    connected = true;
                 }
                 catch
                 {
                     connected = false;
 
-                    if (log)
-                        Console.WriteLine("Failed to connect to Server.");
+                    log("Failed to connect to Server.");
                 }
             }
             else
             {
-                if (log)
-                    Console.WriteLine("Client isn't set up yet. Use setupClient().");
+                log("Client isn't set up yet. Use setupClient().");
             }
         }
 
         private void connectCallback(IAsyncResult ar)
         {
-            if (log)
-                Console.WriteLine("Connected.");
-
             try
             {
                 clientSocket.EndConnect(ar);
+                log("Connected.");
+                connected = true;
             }
             catch
             {
@@ -109,13 +120,11 @@ namespace ClientApp
                 {
                     connected = false;
 
-                    if (log)
-                        Console.WriteLine("Error recieving Messages.");
+                    log("Error recieving Messages.");
                 }
             }
 
-            if (log)
-                Console.WriteLine("Disconnected. Use connect() to reconnect.");
+            log("Disconnected. Use connect() to reconnect.");
         }
 
         private bool onRecieve()
@@ -134,8 +143,7 @@ namespace ClientApp
                 currentread = totalread = clientSocket.Receive(_sizeInfo);
                 if (totalread <= 0)
                 {
-                    if (log)
-                        Console.WriteLine("totalread is <= 0");
+                    log("totalread is <= 0");
 
                     successful = false;
                 }
@@ -165,8 +173,7 @@ namespace ClientApp
                         totalread += currentread;
                     }
 
-                    if (log)
-                        Console.WriteLine("Recieved Byte-Array Length: {0}", messagesize);
+                    log($"Recieved Byte-Array Length: {messagesize}");
 
                     //handle recieved data
                     handleRecievedData(data);
@@ -176,8 +183,7 @@ namespace ClientApp
             }
             catch
             {
-                if (log)
-                    Console.WriteLine("You are not connected to the server!");
+                log("You are not connected to the server!");
 
                 successful = false;
             }
@@ -202,8 +208,7 @@ namespace ClientApp
             }
             else
             {
-                if(log)
-                    Console.WriteLine("Can't send Data. You are not connected to the Server.");
+                log("Can't send Data. You are not connected to the Server.");
             }
         }
         #endregion
@@ -227,8 +232,7 @@ namespace ClientApp
             }
             else
             {
-                if (log)
-                    Console.WriteLine("Couldn't find a matching Function to execute.");
+                log("Couldn't find a matching Function to execute.");
             }
         }
         private void handleRecievedData(byte[] data)
@@ -240,10 +244,14 @@ namespace ClientApp
             catch
             {
                 //Couldn't handle Data
-                if (log)
-                    Console.WriteLine("couldnt handle data");
+                log("couldnt handle data");
             }
         }
         #endregion
+
+        internal void log(string message)
+        {
+            consoleLogged?.Invoke(message);
+        }
     }
 }

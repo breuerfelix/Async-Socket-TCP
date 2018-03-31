@@ -1,0 +1,9 @@
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/bin/Debug/netstandard2.0/Client-Server.deps.json
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/bin/Debug/netstandard2.0/Client-Server.dll
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/bin/Debug/netstandard2.0/Client-Server.pdb
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/obj/Debug/netstandard2.0/Client-Server.csprojResolveAssemblyReference.cache
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/obj/Debug/netstandard2.0/Client-Server.csproj.CoreCompileInputs.cache
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/obj/Debug/netstandard2.0/Client-Server.AssemblyInfoInputs.cache
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/obj/Debug/netstandard2.0/Client-Server.AssemblyInfo.cs
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/obj/Debug/netstandard2.0/Client-Server.dll
+/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/obj/Debug/netstandard2.0/Client-Server.pdb

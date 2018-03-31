@@ -38,7 +38,9 @@ namespace ServerApp
         public event clientFunction clientConnected;
         public event clientFunction clientDisconnected;
 
-        internal bool log = false;
+        //log events
+        public delegate void consoleLog(string message);
+        public event consoleLog consoleLogged;
 
         #region Setup
         public void setupServer(int port = 0)
@@ -55,25 +57,18 @@ namespace ServerApp
             if (port == 0)
                 port = globalVar.SERVER_PORT;
 
-            if (log)
-                Console.WriteLine("Setup Server with Port: {0}", port);
+            log($"Setup Server with Port: {port}");
 
             serverSocket.Bind(new IPEndPoint(IPAddress.Any, port));
             serverSocket.Listen(globalVar.SERVER_MAX_PENDING_CONNECTIONS);
             serverSocket.BeginAccept(new AsyncCallback(acceptCallback), null);
         }
 
-        public void enableConsole(bool console = true)
-        {
-            this.log = console;
-        }
-
         private void acceptCallback(IAsyncResult ar)
         {
             Socket socket = serverSocket.EndAccept(ar);
 
-            if (log)
-                Console.WriteLine("Connection from {0} recieved.", socket.RemoteEndPoint.ToString());
+            log($"Connection from {socket.RemoteEndPoint.ToString()} recieved.");
 
             serverSocket.BeginAccept(new AsyncCallback(acceptCallback), null);
 
@@ -98,8 +93,7 @@ namespace ServerApp
 
             if (!added)
             {
-                if (log)
-                    Console.WriteLine("Max Number of Clients connected is reached. IP: {0} got declined.", socket.RemoteEndPoint.ToString());
+                log($"Max Number of Clients connected is reached. IP: {socket.RemoteEndPoint.ToString()} got declined.");
             }
         }
 
@@ -136,11 +130,15 @@ namespace ServerApp
             }
             else
             {
-                if (log)
-                    Console.WriteLine("Couldn't find a matching Function to execute.");
+                log("Couldn't find a matching Function to execute.");
             }
         }
         #endregion
+
+        internal void log(string message)
+        {
+            consoleLogged?.Invoke(message);
+        }
     }
 
     class client
@@ -158,14 +156,12 @@ namespace ServerApp
             used = true;
             socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(recieveCallback), socket);
 
-            if (server.log)
-                Console.WriteLine("Client: {0} is set up.", id);
+            server.log($"Client: {id} is set up.");
         }
 
         private void recieveCallback(IAsyncResult ar)
         {
-            if (server.log)
-                Console.WriteLine("Data from Client: {0} recieved.", id);
+            server.log($"Data from Client: {id} recieved.");
 
             Socket socket = (Socket)ar.AsyncState;
 
@@ -177,8 +173,7 @@ namespace ServerApp
                 //zero bytes are sent
                 if (recievedLength <= 0)
                 {
-                    if (server.log)
-                        Console.WriteLine("RecievedLength <= 0, Client-ID: {0}", id);
+                    server.log($"RecievedLength <= 0, Client-ID: {id}");
 
                     closeClient();
                 }
@@ -187,8 +182,7 @@ namespace ServerApp
                     byte[] recievedData = new byte[recievedLength];
                     Array.Copy(buffer, recievedData, recievedLength);
 
-                    if (server.log)
-                        Console.WriteLine("Recieved Byte-Array Length: {1}, Client-ID: {0}", id, recievedLength);
+                    server.log($"Recieved Byte-Array Length: {id}, Client-ID: {recievedLength}");
 
                     //handle recieved Data
                     handleRecievedData(recievedData);
@@ -207,10 +201,10 @@ namespace ServerApp
         {
             used = false;
 
-            if (server.log)
-                Console.WriteLine("Connection from {0} has been terminated. Client-ID: {1}", ip, id);
+            server.log($"Connection from {ip} has been terminated. Client-ID: {id}");
 
             //Client Disconnected
+            server.disconnectedClient(this.id);
             socket.Close();
         }
         #endregion
@@ -224,8 +218,7 @@ namespace ServerApp
             }
             catch
             {
-                if (server.log)
-                    Console.WriteLine("Couldn't handle Data with Length: {0}", data.Length);
+                server.log($"Couldn't handle Data with Length: {data.Length}");
             }
         }
 
@@ -246,8 +239,7 @@ namespace ServerApp
             }
             catch
             {
-                if(server.log)
-                    Console.WriteLine("Error sending Message to the Client: " + this.ip);
+                server.log("Error sending Message to the Client: " + this.ip);
             }
         }
         #endregion
