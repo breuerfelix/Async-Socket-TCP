@@ -182,7 +182,7 @@ namespace ServerApp
                     byte[] recievedData = new byte[recievedLength];
                     Array.Copy(buffer, recievedData, recievedLength);
 
-                    server.log($"Recieved Byte-Array Length: {id}, Client-ID: {recievedLength}");
+                    server.log($"Recieved Byte-Array Length: {recievedLength}, Client-ID: {id}");
 
                     //handle recieved Data
                     handleRecievedData(recievedData);

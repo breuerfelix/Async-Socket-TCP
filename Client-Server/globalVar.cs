@@ -6,7 +6,7 @@ namespace ClientServer
 {
     public static class globalVar
     {
-        public static int SERVER_PORT = 5555;
+        public static int SERVER_PORT = 5000;
         public static int SERVER_MAX_PENDING_CONNECTIONS = 10;
 
         public static int BUFFER_BYTE = 1024;

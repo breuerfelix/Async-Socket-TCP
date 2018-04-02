@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 using ClientServer;
 
-namespace ClientApp
+namespace AsyncTCPclient
 {
     /*  
         HOW TO USE
@@ -28,16 +28,19 @@ namespace ClientApp
         pack.Dispose();
     */
 
-    public class clientTCP
+    public class ATclient
     {
+        public static int BUFFER_SIZE = 1024;
+        public static int PACKAGE_LENGTH_SIZE = 4;
+
         private Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        private byte[] asynchbuffer = new byte[globalVar.BUFFER_BYTE];
 
         private string ip;
         private int port;
         private bool setup = false;
 
-        private bool _connected;
+        private static Object Lock = new Object();
+        private bool _connected = false;
         private bool connected
         {
             get
@@ -49,7 +52,8 @@ namespace ClientApp
             }
             set
             {
-                lock(Lock){
+                lock (Lock)
+                {
                     _connected = value;
                 }
             }
@@ -59,72 +63,68 @@ namespace ClientApp
         public delegate void consoleLog(string message);
         public event consoleLog consoleLogged;
 
-        private static Object Lock = new Object();
-
         #region Setup
-        public void setupClient(string ip = "127.0.0.1", int port = 0)
+        public void connect(string ip = "127.0.0.1", int port = 5000)
         {
-            if (port == 0)
-                port = globalVar.SERVER_PORT;
-
             this.ip = ip;
             this.port = port;
-            setup = true;
+
+            log("Connection to server...");
+
+            try
+            {
+                clientSocket.BeginConnect(ip, port, new AsyncCallback(connectCallback), clientSocket);
+            }
+            catch
+            {
+                connected = false;
+
+                log("Failed to connect to Server.");
+            }
 
             log($"Client set up to communicate with Server {ip} with Port {port}");
-        }
-
-        public void connect()
-        {
-            if (setup)
-            {
-                log("Connection to server...");
-
-                try
-                {
-                    clientSocket.BeginConnect(ip, port, new AsyncCallback(connectCallback), clientSocket);
-                }
-                catch
-                {
-                    connected = false;
-
-                    log("Failed to connect to Server.");
-                }
-            }
-            else
-            {
-                log("Client isn't set up yet. Use setupClient().");
-            }
         }
 
         private void connectCallback(IAsyncResult ar)
         {
             try
             {
-                clientSocket.EndConnect(ar);
+                Socket tempS = ar.AsyncState as Socket;
+                tempS.EndConnect(ar);
+
                 log("Connected.");
                 connected = true;
+
+                packageState package = new packageState(tempS);
+
+                tempS.BeginReceive(package.buffer1, 0, 4, SocketFlags.None, new AsyncCallback(recieveCallback), package);
             }
             catch
             {
                 connected = false;
+                log("Failed to connect to Server.");
             }
+        }
 
-            while (connected)
+        private void recieveCallback(IAsyncResult ar)
+        {
+            try
             {
-                try
-                {
-                    connected = onRecieve();
-                }
-                catch
-                {
-                    connected = false;
+                packageState package = ar.AsyncState as packageState;
+                Socket client = package.socket;
 
-                    log("Error recieving Messages.");
+                int bytesRead = client.EndReceive(ar);
+                int i1 = BitConverter.ToInt32(package.buffer1, 0);
+                 if (bytesRead > 0)
+                {
+                    package.copyBuffer(bytesRead);
+                    package.socket.BeginReceive(package.buffer, 0, ATclient.BUFFER_SIZE, SocketFlags.None, new AsyncCallback(recieveCallback), package);
                 }
             }
-
-            log("Disconnected. Use connect() to reconnect.");
+            catch
+            {
+                log("Error recieving Message!");
+            }
         }
 
         private bool onRecieve()
@@ -190,6 +190,7 @@ namespace ClientApp
 
             return successful;
         }
+
         #endregion
 
         #region Send Data
@@ -252,6 +253,32 @@ namespace ClientApp
         internal void log(string message)
         {
             consoleLogged?.Invoke(message);
+        }
+    }
+
+    internal class packageState
+    {
+        public Socket socket = null;
+        public byte[] buffer = new byte[ATclient.BUFFER_SIZE];
+        public byte[] buffer1 = new byte[4];
+        public List<byte> finalBytes = new List<byte>();
+        public bool done = false;
+
+        public packageState(Socket s)
+        {
+            this.socket = s;
+        }
+
+        public void copyBuffer(int size)
+        {
+            byte[] temp = new byte[size];
+            
+            for(int i = 0; i < size; i++)
+            {
+                temp[i] = buffer[i];
+            }
+
+            finalBytes.AddRange(temp);
         }
     }
 }
