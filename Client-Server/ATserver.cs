@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using ClientServer;
 
-namespace ServerApp
+namespace AsyncTCPserver
 {
     /*  
         HOW TO USE
@@ -27,16 +27,21 @@ namespace ServerApp
     */
     public delegate void handleClientData(int clientID, byte[] data);
 
-    public class serverTCP
+    public class ATserver
     {
+        public static int MAX_PENDING_CONNECTIONS = 20;
+        public static int MAX_CLIENTS = 1000;
+
+        public static int BUFFER_SIZE = 1024;
+        public static int PACKAGE_LENGTH_SIZE = 4;
+
         private Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        private byte[] buffer = new byte[globalVar.BUFFER_BYTE];
 
         private client[] clients = new client[globalVar.MAX_CLIENTS];
 
-        public delegate void clientFunction(int clientID);
-        public event clientFunction clientConnected;
-        public event clientFunction clientDisconnected;
+        public delegate void clientHandler(int clientID);
+        public event clientHandler clientConnected;
+        public event clientHandler clientDisconnected;
 
         //log events
         public delegate void consoleLog(string message);

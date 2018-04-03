@@ -33,11 +33,13 @@ namespace AsyncTCPclient
         public static int BUFFER_SIZE = 1024;
         public static int PACKAGE_LENGTH_SIZE = 4;
 
+        public delegate void byteHandler(byte[] data);
+        public event byteHandler recievingData;
+
         private Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         private string ip;
         private int port;
-        private bool setup = false;
 
         private static Object Lock = new Object();
         private bool _connected = false;
@@ -63,7 +65,7 @@ namespace AsyncTCPclient
         public delegate void consoleLog(string message);
         public event consoleLog consoleLogged;
 
-        #region Setup
+        #region Connect
         public void connect(string ip = "127.0.0.1", int port = 5000)
         {
             this.ip = ip;
@@ -84,7 +86,9 @@ namespace AsyncTCPclient
 
             log($"Client set up to communicate with Server {ip} with Port {port}");
         }
+        #endregion
 
+        #region Recieve
         private void connectCallback(IAsyncResult ar)
         {
             try
@@ -97,7 +101,7 @@ namespace AsyncTCPclient
 
                 packageState package = new packageState(tempS);
 
-                tempS.BeginReceive(package.buffer1, 0, 4, SocketFlags.None, new AsyncCallback(recieveCallback), package);
+                tempS.BeginReceive(package.sizeBuffer, 0, package.sizeBuffer.Length, SocketFlags.None, new AsyncCallback(recieveCallback), package);
             }
             catch
             {
@@ -111,14 +115,51 @@ namespace AsyncTCPclient
             try
             {
                 packageState package = ar.AsyncState as packageState;
-                Socket client = package.socket;
+                Socket clientS = package.socket;
 
-                int bytesRead = client.EndReceive(ar);
-                int i1 = BitConverter.ToInt32(package.buffer1, 0);
-                 if (bytesRead > 0)
+                int bytesRead = clientS.EndReceive(ar);
+
+                if (bytesRead > 0)
                 {
-                    package.copyBuffer(bytesRead);
-                    package.socket.BeginReceive(package.buffer, 0, ATclient.BUFFER_SIZE, SocketFlags.None, new AsyncCallback(recieveCallback), package);
+                    int size = ATclient.BUFFER_SIZE;
+                    if (package.readOffset == -1)
+                    {
+                        size = BitConverter.ToInt32(package.sizeBuffer, 0);
+                        package.readBuffer = new byte[size];
+                        package.readOffset = 0;
+
+                    }
+                    else
+                    {
+                        package.readOffset += bytesRead;
+
+                        if (package.readOffset == package.readBuffer.Length)
+                        {
+                            byte[] temp = package.readBuffer.Clone() as byte[];
+
+                            new Thread(() =>
+                            {
+                                recievingData?.Invoke(temp);
+                            }).Start();
+
+                            package.Dispose();
+                            package = new packageState(clientS);
+                        }
+                    }
+
+                    if (package.readBuffer == null)
+                    {
+                        package.socket.BeginReceive(package.sizeBuffer, 0, package.sizeBuffer.Length, SocketFlags.None, new AsyncCallback(recieveCallback), package);
+                    }
+                    else
+                    {
+                        int readsize = (ATclient.BUFFER_SIZE > size) ? size : ATclient.BUFFER_SIZE;
+                        package.socket.BeginReceive(package.readBuffer, package.readOffset, readsize, SocketFlags.None, new AsyncCallback(recieveCallback), package);
+                    }
+                }
+                else
+                {
+                    log("Error recieving Message! ReadBytes < 0.");
                 }
             }
             catch
@@ -126,81 +167,16 @@ namespace AsyncTCPclient
                 log("Error recieving Message!");
             }
         }
-
-        private bool onRecieve()
-        {
-            bool successful = true;
-
-            int sizeInfoSize = globalVar.DATA_SIZE_INFO_SIZE;
-            byte[] _sizeInfo = new byte[sizeInfoSize];
-            byte[] _recieveBuffer = new byte[globalVar.BUFFER_BYTE];
-
-            int totalread = 0;
-            int currentread = 0;
-
-            try
-            {
-                currentread = totalread = clientSocket.Receive(_sizeInfo);
-                if (totalread <= 0)
-                {
-                    log("totalread is <= 0");
-
-                    successful = false;
-                }
-                else
-                {
-                    while (totalread < _sizeInfo.Length & currentread > 0)
-                    {
-                        currentread = clientSocket.Receive(_sizeInfo, totalread, _sizeInfo.Length - totalread, SocketFlags.None);
-                        totalread += currentread;
-                    }
-
-                    int messagesize = 0;
-
-                    for (int i = 0; i < sizeInfoSize; i++)
-                    {
-                        messagesize |= (_sizeInfo[i] << (i * 8));
-                    }
-
-                    byte[] data = new byte[messagesize];
-
-                    totalread = 0;
-                    currentread = totalread = clientSocket.Receive(data, totalread, data.Length - totalread, SocketFlags.None);
-
-                    while (totalread < messagesize & currentread > 0)
-                    {
-                        currentread = clientSocket.Receive(data, totalread, data.Length - totalread, SocketFlags.None);
-                        totalread += currentread;
-                    }
-
-                    log($"Recieved Byte-Array Length: {messagesize}");
-
-                    //handle recieved data
-                    handleRecievedData(data);
-
-                    successful = true;
-                }
-            }
-            catch
-            {
-                log("You are not connected to the server!");
-
-                successful = false;
-            }
-
-            return successful;
-        }
-
         #endregion
 
-        #region Send Data
+        #region Send
         public void sendData(byte[] data)
         {
             if (connected)
             {
                 try
                 {
-                    clientSocket.Send(data);
+                    clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(sendCallback), clientSocket);
                 }
                 catch
                 {
@@ -212,11 +188,25 @@ namespace AsyncTCPclient
                 log("Can't send Data. You are not connected to the Server.");
             }
         }
+
+        private void sendCallback(IAsyncResult ar)
+        {
+            try
+            {
+                Socket clientS = ar.AsyncState as Socket;
+                int sizeSend = clientS.EndSend(ar);
+
+                log($"Sent {sizeSend} Bytes to the Server.");
+            }
+            catch
+            {
+                log("Failed sending Message!");
+            }
+        }
         #endregion
 
         #region Handle Data
-        public delegate void handleServerData(byte[] data);
-        public Dictionary<string, handleServerData> handleFunctions = new Dictionary<string, handleServerData>();
+        public Dictionary<string, byteHandler> handleFunctions = new Dictionary<string, byteHandler>();
 
         private void handleData(byte[] data)
         {
@@ -225,7 +215,7 @@ namespace AsyncTCPclient
             string enumString = pack.readString();
             pack.Dispose();
 
-            handleServerData function;
+            byteHandler function;
 
             if (handleFunctions.TryGetValue(enumString, out function))
             {
@@ -256,29 +246,41 @@ namespace AsyncTCPclient
         }
     }
 
-    internal class packageState
+    internal class packageState : IDisposable
     {
         public Socket socket = null;
-        public byte[] buffer = new byte[ATclient.BUFFER_SIZE];
-        public byte[] buffer1 = new byte[4];
-        public List<byte> finalBytes = new List<byte>();
-        public bool done = false;
+        public byte[] sizeBuffer = new byte[ATclient.PACKAGE_LENGTH_SIZE];
+        public int readOffset = -1;
+        public byte[] readBuffer = null;
 
         public packageState(Socket s)
         {
             this.socket = s;
         }
 
-        public void copyBuffer(int size)
-        {
-            byte[] temp = new byte[size];
-            
-            for(int i = 0; i < size; i++)
-            {
-                temp[i] = buffer[i];
-            }
+        #region IDisposable Support
+        private bool disposedValue = false;
 
-            finalBytes.AddRange(temp);
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    socket = null;
+                    sizeBuffer = null;
+                    readBuffer = null;
+                }
+
+                disposedValue = true;
+            }
         }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

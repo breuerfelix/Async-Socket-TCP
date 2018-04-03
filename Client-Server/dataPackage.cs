@@ -210,7 +210,7 @@ namespace ClientServer
             {
                 if (disposing)
                 {
-                    bufferList.Clear();
+                    bufferList = null;
                 }
 
                 readPos = 0;
