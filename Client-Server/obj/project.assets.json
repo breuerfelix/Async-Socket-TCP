@@ -30,7 +30,7 @@
   },
   "libraries": {
     "Microsoft.NETCore.Platforms/1.1.0": {
-      "sha512": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "sha512": "Gml/WW3leQhULRX3GzfyOq5IoRHihT4SfKHuC9DBSMgA7MbP/x8dVTJ/Oh2lsDo1Yr/FY2X3IGoix6knu/H0bg==",
       "type": "package",
       "path": "microsoft.netcore.platforms/1.1.0",
       "files": [
@@ -177,28 +177,33 @@
     ]
   },
   "packageFolders": {
-    "/Users/felixbreuer/.nuget/packages/": {},
-    "/usr/local/share/dotnet/sdk/NuGetFallbackFolder": {}
+    "C:\\Users\\fbreu\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/AsyncTCP.csproj",
+      "projectUniqueName": "C:\\Users\\fbreu\\Documents\\Client-Server-TCP\\Client-Server\\AsyncTCP.csproj",
       "projectName": "AsyncTCP",
-      "projectPath": "/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/AsyncTCP.csproj",
-      "packagesPath": "/Users/felixbreuer/.nuget/packages/",
-      "outputPath": "/Users/felixbreuer/Desktop/GitHub/Client-Server-TCP/Client-Server/obj",
+      "projectPath": "C:\\Users\\fbreu\\Documents\\Client-Server-TCP\\Client-Server\\AsyncTCP.csproj",
+      "packagesPath": "C:\\Users\\fbreu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\fbreu\\Documents\\Client-Server-TCP\\Client-Server\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "/Users/felixbreuer/.config/NuGet/NuGet.Config"
+        "C:\\Users\\fbreu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
       ],
       "originalTargetFrameworks": [
         "netstandard2.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -218,7 +223,7 @@
           "NETStandard.Library": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "2.0.1",
+            "version": "[2.0.1, )",
             "autoReferenced": true
           }
         },

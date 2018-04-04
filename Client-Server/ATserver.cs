@@ -11,20 +11,7 @@ namespace AsyncTCPserver
     /*  
         HOW TO USE
 
-        //Setup Server
-        serverTCP server = new serverTCP(); 
-        server.setupServer();
-
-        //connect the Delegate Function
-        server.handleFunctions.Add("message", handleStringMessage);
-        make a function called handleStringMessage(int clientID, byte[] data);
-
-        //Send Data to the Client
-        dataPackage pack = new dataPackage();
-        pack.write("message");
-        pack.write("Hello, this is a Message. - CLIENT");
-        server.sendData(clientID, pack.toArray());
-        pack.Dispose();
+        coming soon
     */
     public delegate void clientHandler(int clientID);
 
@@ -278,10 +265,12 @@ namespace AsyncTCPserver
             {
                 //send sizeinfo
                 byte[] sizeInfo = BitConverter.GetBytes(data.Length);
-                this.socket.BeginSend(sizeInfo, 0, sizeInfo.Length, SocketFlags.None, new AsyncCallback(sendCallback), this.socket);
 
-                //send data
-                this.socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(sendCallback), this.socket);
+                sendState state = new sendState();
+                state.socket = this.socket;
+                state.data = data;
+
+                state.socket.BeginSend(sizeInfo, 0, sizeInfo.Length, SocketFlags.None, new AsyncCallback(sendCallback), state);
             }
             catch
             {
@@ -294,10 +283,21 @@ namespace AsyncTCPserver
         {
             try
             {
-                Socket clientS = ar.AsyncState as Socket;
-                int sizeSend = clientS.EndSend(ar);
+                sendState state = ar.AsyncState as sendState;
+                int sizeSend = state.socket.EndSend(ar);
 
-                log($"Sent {sizeSend} Bytes to the Server.");
+                if (!state.sent)
+                {
+                    log("Sizeinfo sent.");
+                    state.sent = true;
+                    //sending actual data
+                    state.socket.BeginSend(state.data, 0, state.data.Length, SocketFlags.None, new AsyncCallback(sendCallback), state);
+                }
+                else
+                {
+                    log($"Sent {sizeSend} Bytes to the Server.");
+                    state.Dispose();
+                }
             }
             catch
             {
@@ -312,6 +312,38 @@ namespace AsyncTCPserver
             consoleLogging?.Invoke(message);
         }
     }
+
+    internal class sendState : IDisposable
+    {
+        public Socket socket = null;
+        public byte[] data = null;
+        public bool sent = false;
+
+        #region IDisposable Support
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    socket = null;
+                    data = null;
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
+    }
+
 
     internal class packageState : IDisposable
     {
