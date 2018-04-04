@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Collections.Generic;
+using System.Threading;
 
 using ClientServer;
 
@@ -25,7 +26,10 @@ namespace AsyncTCPserver
         server.sendData(clientID, pack.toArray());
         pack.Dispose();
     */
-    public delegate void handleClientData(int clientID, byte[] data);
+    public delegate void clientHandler(int clientID);
+
+    public delegate void clientByteHandler(int clientID, byte[] data);
+    public delegate void stringHandler(string message);
 
     public class ATserver
     {
@@ -37,88 +41,102 @@ namespace AsyncTCPserver
 
         private Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        private client[] clients = new client[globalVar.MAX_CLIENTS];
+        private List<client> clients = new List<client>();
 
-        public delegate void clientHandler(int clientID);
-        public event clientHandler clientConnected;
-        public event clientHandler clientDisconnected;
+        //public events
+        public event clientByteHandler recievingData;
+        public event clientHandler clientConnecting;
+        public event clientHandler clientDisconnecting;
 
         //log events
-        public delegate void consoleLog(string message);
-        public event consoleLog consoleLogged;
+        public event stringHandler consoleLogged;
 
-        #region Setup
-        public void setupServer(int port = 0)
+        #region Connect
+        public void start(int port = 5000)
         {
-            for (int i = 0; i < clients.Length; i++)
-            {
-                clients[i] = new client
-                {
-                    id = i,
-                    server = this
-                };
-            }
-
-            if (port == 0)
-                port = globalVar.SERVER_PORT;
-
-            log($"Setup Server with Port: {port}");
-
             serverSocket.Bind(new IPEndPoint(IPAddress.Any, port));
-            serverSocket.Listen(globalVar.SERVER_MAX_PENDING_CONNECTIONS);
-            serverSocket.BeginAccept(new AsyncCallback(acceptCallback), null);
+            serverSocket.Listen(ATserver.MAX_PENDING_CONNECTIONS);
+            serverSocket.BeginAccept(new AsyncCallback(acceptCallback), serverSocket);
+
+            log($"Server listening on Port: {port}");
         }
 
         private void acceptCallback(IAsyncResult ar)
         {
-            Socket socket = serverSocket.EndAccept(ar);
-
-            log($"Connection from {socket.RemoteEndPoint.ToString()} recieved.");
-
-            serverSocket.BeginAccept(new AsyncCallback(acceptCallback), null);
-
-            bool added = false;
-
-            for (int i = 0; i < clients.Length; i++)
+            try
             {
-                if (!clients[i].used)
+                Socket serverS = ar.AsyncState as Socket;
+
+                Socket clientSocket = serverS.EndAccept(ar);
+                serverS.BeginAccept(new AsyncCallback(acceptCallback), serverS);
+
+                log($"Connection from {clientSocket.RemoteEndPoint.ToString()} recieved.");
+
+                if (clients.Count < ATserver.MAX_CLIENTS)
                 {
-                    client c = clients[i];
-                    c.socket = socket;
-                    c.ip = socket.RemoteEndPoint.ToString();
+                    client c = new client(clientSocket);
+                    clients.Add(c);
+
+                    c.clientDisconnecting += clientDisconnected;
+                    c.recievingData += recievedData;
+                    c.consoleLogging += log;
 
                     //start the client
                     c.startClient();
-                    clientConnected?.Invoke(c.id);
-
-                    added = true;
-                    break;
+                    clientConnecting?.Invoke(c.id);
+                }
+                else
+                {
+                    clientSocket.Close();
+                    log($"Max Number of Clients connected is reached. IP: {clientSocket.RemoteEndPoint.ToString()} got declined.");
                 }
             }
-
-            if (!added)
+            catch
             {
-                log($"Max Number of Clients connected is reached. IP: {socket.RemoteEndPoint.ToString()} got declined.");
+                log("Error accepting connection!");
             }
         }
 
-        internal void disconnectedClient(int clientID)
+        private void clientDisconnected(int clientID)
         {
-            clientDisconnected?.Invoke(clientID);
+            client client = clients.Find(x => x.id == clientID);
+
+            if (client != null)
+            {
+                clientDisconnecting?.Invoke(clientID);
+
+                clients.Remove(client);
+
+                client.clientDisconnecting -= clientDisconnected;
+                client.recievingData -= recievedData;
+                client.consoleLogging -= log;
+            }
+        }
+
+        private void recievedData(int clientID, byte[] data)
+        {
+            recievingData?.Invoke(clientID, data);
         }
         #endregion
 
-        #region Send Data
+        #region Send
         public void sendDataTo(int id, byte[] data)
         {
-            client c = clients[id];
+            client c = clients.Find(x => x.id == id);
 
-            c.sendData(data);
+            if (c != null)
+            {
+                c.sendData(data);
+            }
+            else
+            {
+                log($"Couldn't find client with ID: {id}");
+            }
         }
         #endregion
 
         #region HandleData
-        public Dictionary<string, handleClientData> handleFunctions = new Dictionary<string, handleClientData>();
+        public Dictionary<string, clientByteHandler> handleFunctions = new Dictionary<string, clientByteHandler>();
 
         internal void handleData(int clientID, byte[] data)
         {
@@ -127,7 +145,7 @@ namespace AsyncTCPserver
             string enumString = pack.readString();
             pack.Dispose();
 
-            handleClientData function;
+            clientByteHandler function;
 
             if (handleFunctions.TryGetValue(enumString, out function))
             {
@@ -146,106 +164,189 @@ namespace AsyncTCPserver
         }
     }
 
-    class client
+    internal class client
     {
-        internal int id;
-        internal string ip;
-        internal Socket socket;
-        internal bool used = false;
-        internal serverTCP server;
-        private byte[] buffer = new byte[globalVar.BUFFER_BYTE];
+        public int id;
+        private static List<int> idList = new List<int>();
+
+        private Socket socket = null;
+
+        public event clientByteHandler recievingData;
+        public event clientHandler clientDisconnecting;
+        public event stringHandler consoleLogging;
+
+        public client(Socket s)
+        {
+            id = 0;
+
+            while (idList.Contains(id))
+            {
+                id++;
+            }
+
+            this.socket = s;
+        }
 
         #region Setup
         public void startClient()
         {
-            used = true;
-            socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(recieveCallback), socket);
+            packageState package = new packageState(this.socket);
 
-            server.log($"Client: {id} is set up.");
+            socket.BeginReceive(package.sizeBuffer, 0, package.sizeBuffer.Length, SocketFlags.None, new AsyncCallback(recieveCallback), package);
+
+            log($"Client: {id} is set up.");
         }
 
         private void recieveCallback(IAsyncResult ar)
         {
-            server.log($"Data from Client: {id} recieved.");
-
-            Socket socket = (Socket)ar.AsyncState;
+            log($"Data from Client: {id} recieved.");
 
             try
             {
-                //length of recieved buffer
-                int recievedLength = socket.EndReceive(ar);
+                packageState package = ar.AsyncState as packageState;
+                Socket clientS = package.socket;
 
-                //zero bytes are sent
-                if (recievedLength <= 0)
+                int bytesRead = clientS.EndReceive(ar);
+
+                if (bytesRead > 0)
                 {
-                    server.log($"RecievedLength <= 0, Client-ID: {id}");
+                    int size = ATserver.BUFFER_SIZE;
+                    if (package.readOffset == -1)
+                    {
+                        size = BitConverter.ToInt32(package.sizeBuffer, 0);
+                        package.readBuffer = new byte[size];
+                        package.readOffset = 0;
 
-                    closeClient();
+                    }
+                    else
+                    {
+                        package.readOffset += bytesRead;
+
+                        if (package.readOffset == package.readBuffer.Length)
+                        {
+                            //clone array so the package can be disposed
+                            byte[] temp = package.readBuffer.Clone() as byte[];
+
+                            //invoke the event
+                            recievingData?.Invoke(this.id, temp);
+
+                            //free memory
+                            package.Dispose();
+                            package = new packageState(clientS);
+                        }
+                    }
+
+                    if (package.readBuffer == null)
+                    {
+                        package.socket.BeginReceive(package.sizeBuffer, 0, package.sizeBuffer.Length, SocketFlags.None, new AsyncCallback(recieveCallback), package);
+                    }
+                    else
+                    {
+                        int readsize = (ATserver.BUFFER_SIZE > size) ? size : ATserver.BUFFER_SIZE;
+                        package.socket.BeginReceive(package.readBuffer, package.readOffset, readsize, SocketFlags.None, new AsyncCallback(recieveCallback), package);
+                    }
                 }
                 else
                 {
-                    byte[] recievedData = new byte[recievedLength];
-                    Array.Copy(buffer, recievedData, recievedLength);
-
-                    server.log($"Recieved Byte-Array Length: {recievedLength}, Client-ID: {id}");
-
-                    //handle recieved Data
-                    handleRecievedData(recievedData);
-
-                    socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, new AsyncCallback(recieveCallback), socket);
+                    log("Error recieving Message! ReadBytes < 0.");
+                    closeClient();
                 }
             }
             catch
             {
-                //Client Disconnects
+                log("Error recieving Message!");
                 closeClient();
             }
         }
 
         private void closeClient()
         {
-            used = false;
+            log($"Connection from {socket.RemoteEndPoint.ToString()} has been terminated. Client-ID: {id}");
 
-            server.log($"Connection from {ip} has been terminated. Client-ID: {id}");
+            socket.Close();
 
             //Client Disconnected
-            server.disconnectedClient(this.id);
-            socket.Close();
+            clientDisconnecting(this.id);
         }
         #endregion
 
         #region Send / Recieve Data
-        private void handleRecievedData(byte[] data)
-        {
-            try
-            {
-                server.handleData(this.id, data);
-            }
-            catch
-            {
-                server.log($"Couldn't handle Data with Length: {data.Length}");
-            }
-        }
 
         public void sendData(byte[] data)
         {
-            int size = globalVar.DATA_SIZE_INFO_SIZE;
-
-            byte[] sizeInfo = new byte[size];
-            for (int i = 0; i < size; i++)
-            {
-                sizeInfo[i] = (byte)(data.Length >> (i * 8));
-            }
-
             try
             {
-                socket.Send(sizeInfo);
-                socket.Send(data);
+                //send sizeinfo
+                byte[] sizeInfo = BitConverter.GetBytes(data.Length);
+                this.socket.BeginSend(sizeInfo, 0, sizeInfo.Length, SocketFlags.None, new AsyncCallback(sendCallback), this.socket);
+
+                //send data
+                this.socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(sendCallback), this.socket);
             }
             catch
             {
-                server.log("Error sending Message to the Client: " + this.ip);
+                log("Error sending Message to the Client: " + this.id);
+                closeClient();
             }
+        }
+
+        private void sendCallback(IAsyncResult ar)
+        {
+            try
+            {
+                Socket clientS = ar.AsyncState as Socket;
+                int sizeSend = clientS.EndSend(ar);
+
+                log($"Sent {sizeSend} Bytes to the Server.");
+            }
+            catch
+            {
+                log("Failed sending Message!");
+                closeClient();
+            }
+        }
+        #endregion
+
+        private void log(string message)
+        {
+            consoleLogging?.Invoke(message);
+        }
+    }
+
+    internal class packageState : IDisposable
+    {
+        public Socket socket = null;
+        public byte[] sizeBuffer = new byte[ATserver.PACKAGE_LENGTH_SIZE];
+        public int readOffset = -1;
+        public byte[] readBuffer = null;
+
+        public packageState(Socket s)
+        {
+            this.socket = s;
+        }
+
+        #region IDisposable Support
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    socket = null;
+                    sizeBuffer = null;
+                    readBuffer = null;
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

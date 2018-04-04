@@ -1,9 +1,8 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="Client-Server/ClientTCP.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Client-Server/ATclient.cs">
     <Files>
-      <File FileName="Client-Server/ClientTCP.cs" Line="162" Column="21" />
-      <File FileName="Client-Server/ServerTCP.cs" Line="27" Column="7" />
-      <File FileName="Client-Server/globalVar.cs" Line="1" Column="1" />
+      <File FileName="Client-Server/ATserver.cs" Line="264" Column="13" />
+      <File FileName="Client-Server/ATclient.cs" Line="153" Column="46" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

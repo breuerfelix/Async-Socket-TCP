@@ -43,7 +43,7 @@ namespace AsyncTCPclient
 
         private static Object Lock = new Object();
         private bool _connected = false;
-        private bool connected
+        public bool connected
         {
             get
             {
@@ -58,12 +58,19 @@ namespace AsyncTCPclient
                 {
                     _connected = value;
                 }
+
+                if(value == false){
+                    disconnecting?.Invoke();
+                }
             }
         }
 
+        public delegate void standardHandler();
+        public event standardHandler disconnecting;
+
         //log events
         public delegate void consoleLog(string message);
-        public event consoleLog consoleLogged;
+        public event consoleLog consoleLogging;
 
         #region Connect
         public void connect(string ip = "127.0.0.1", int port = 5000)
@@ -135,13 +142,13 @@ namespace AsyncTCPclient
 
                         if (package.readOffset == package.readBuffer.Length)
                         {
+                            //clone array so the package can be disposed
                             byte[] temp = package.readBuffer.Clone() as byte[];
 
-                            new Thread(() =>
-                            {
-                                recievingData?.Invoke(temp);
-                            }).Start();
+                            //invoke the event
+                            recievingData?.Invoke(temp);
 
+                            //free memory
                             package.Dispose();
                             package = new packageState(clientS);
                         }
@@ -159,11 +166,13 @@ namespace AsyncTCPclient
                 }
                 else
                 {
+                    connected = false;
                     log("Error recieving Message! ReadBytes < 0.");
                 }
             }
             catch
             {
+                connected = false;
                 log("Error recieving Message!");
             }
         }
@@ -176,6 +185,11 @@ namespace AsyncTCPclient
             {
                 try
                 {
+                    //send sizeinfo
+                    byte[] sizeInfo = BitConverter.GetBytes(data.Length);
+                    clientSocket.BeginSend(sizeInfo, 0, sizeInfo.Length, SocketFlags.None, new AsyncCallback(sendCallback), clientSocket);
+
+                    //send data
                     clientSocket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(sendCallback), clientSocket);
                 }
                 catch
@@ -200,6 +214,7 @@ namespace AsyncTCPclient
             }
             catch
             {
+                connected = false;
                 log("Failed sending Message!");
             }
         }
@@ -242,7 +257,7 @@ namespace AsyncTCPclient
 
         internal void log(string message)
         {
-            consoleLogged?.Invoke(message);
+            consoleLogging?.Invoke(message);
         }
     }
 
